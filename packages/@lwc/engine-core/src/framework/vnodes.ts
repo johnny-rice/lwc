@@ -80,6 +80,7 @@ export interface VNodeData {
 export interface VElementData extends VNodeData {
     // Similar to above, all props are readonly
     readonly key: Key;
+    readonly ref?: string;
 }
 
 export interface Hooks<N extends VNode> {

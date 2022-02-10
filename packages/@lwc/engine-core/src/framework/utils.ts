@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, create, isFunction, seal } from '@lwc/shared';
+import { ArrayPush, create, isFunction, isNull, isUndefined, seal } from '@lwc/shared';
+import { VM } from './vm';
+import { VNode } from './vnodes';
 
 type Callback = () => void;
 
@@ -84,4 +86,20 @@ export function cloneAndOmitKey(object: { [key: string]: any }, keyToOmit: strin
         }
     }
     return result;
+}
+
+// Set a ref (lwc:ref) on a VM, from a template API
+export function setRef(vm: VM, ref: string | undefined, vnode: VNode) {
+    if (!isUndefined(ref)) {
+        if (isNull(vm.refs)) {
+            // Create the refs object on-demand. This ensures that templates with no refs
+            // don't pay the perf tax of creating objects unnecessarily.
+            vm.refs = Object.create(null);
+        }
+        // In cases of conflict (two elements with the same ref), prefer, the last one,
+        // in depth-first traversal order.
+        if (!(ref in vm.refs!) || vm.refs![ref].key! < vnode.key!) {
+            vm.refs![ref] = vnode;
+        }
+    }
 }

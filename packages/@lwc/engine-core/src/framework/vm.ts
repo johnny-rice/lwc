@@ -100,6 +100,8 @@ export interface Context {
     wiredDisconnecting: Array<() => void>;
 }
 
+export type Refs = { [name: string]: VNode };
+
 export interface VM<N = HostNode, E = HostElement> {
     /** The host element */
     readonly elm: HostElement;
@@ -111,6 +113,10 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly context: Context;
     /** The owner VM or null for root elements. */
     readonly owner: VM<N, E> | null;
+    /**
+     * References to elements rendered using lwc:ref
+     */
+    refs: Refs | null;
     /** Rendering operations associated with the VM */
     renderMode: RenderMode;
     shadowMode: ShadowMode;
@@ -294,6 +300,7 @@ export function createVM<HostNode, HostElement>(
         tagName,
         mode,
         owner,
+        refs: null,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,

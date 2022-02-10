@@ -27,7 +27,7 @@ import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
-import { EmptyArray } from './utils';
+import { EmptyArray, setRef } from './utils';
 import { isComponentConstructor } from './def';
 import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
@@ -94,19 +94,22 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         });
     }
 
-    let elm;
-    const { key } = data;
+    const { key, ref } = data;
 
-    return {
+    const vnode: VElement = {
         type: VNodeType.Element,
         sel,
         data,
         children,
-        elm,
+        elm: undefined,
         key,
         hook: ElementHook,
         owner: vmBeingRendered,
     };
+
+    setRef(vmBeingRendered, ref, vnode);
+
+    return vnode;
 }
 
 // [t]ab[i]ndex function
@@ -207,22 +210,23 @@ function c(
             });
         }
     }
-    const { key } = data;
-    let elm;
+    const { key, ref } = data;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
         sel,
         data,
         children,
-        elm,
+        elm: undefined,
         key,
-
         hook: CustomElementHook,
         ctor: Ctor,
         owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
     };
     addVNodeToChildLWC(vnode);
+
+    setRef(vmBeingRendered, ref, vnode);
+
     return vnode;
 }
 
