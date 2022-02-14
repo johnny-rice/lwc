@@ -94,7 +94,7 @@ export function setRef(vm: VM, ref: string | undefined, vnode: VNode) {
         if (isNull(vm.refs)) {
             // Create the refs object on-demand. This ensures that templates with no refs
             // don't pay the perf tax of creating objects unnecessarily.
-            vm.refs = Object.create(null);
+            vm.refs = create(null);
         }
         // In cases of conflict (two elements with the same ref), prefer, the last one,
         // in depth-first traversal order.
