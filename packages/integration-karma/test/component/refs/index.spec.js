@@ -8,6 +8,7 @@ import Conflict from 'x/conflict';
 import Parent from 'x/parent';
 import Light from 'x/light';
 import Dynamic from 'x/dynamic';
+import Conditional from 'x/conditional';
 
 describe('refs', () => {
     it('basic refs example', () => {
@@ -126,5 +127,30 @@ describe('refs', () => {
         const dynamic = elm.getRef('dynamic');
         expect(dynamic.tagName.toLowerCase()).toEqual('x-dynamic-cmp');
         expect(dynamic.getRefTextContent('first')).toEqual('first');
+    });
+
+    it('ref with conditional', () => {
+        const elm = createElement('x-conditional', { is: Conditional });
+        document.body.appendChild(elm);
+
+        expect(elm.getRef('coinflip').textContent).toEqual('tails');
+        expect(elm.getRef('onlyHeads')).toBeUndefined();
+        expect(elm.getRef('onlyTails').textContent).toEqual('only tails');
+        expect(elm.getRefNames()).toEqual(['coinflip', 'onlyTails']);
+        elm.next();
+        return Promise.resolve()
+            .then(() => {
+                expect(elm.getRef('coinflip').textContent).toEqual('heads');
+                expect(elm.getRef('onlyTails')).toBeUndefined();
+                expect(elm.getRef('onlyHeads').textContent).toEqual('only heads');
+                expect(elm.getRefNames()).toEqual(['coinflip', 'onlyHeads']);
+                elm.next();
+            })
+            .then(() => {
+                expect(elm.getRef('coinflip').textContent).toEqual('tails');
+                expect(elm.getRef('onlyHeads')).toBeUndefined();
+                expect(elm.getRef('onlyTails').textContent).toEqual('only tails');
+                expect(elm.getRefNames()).toEqual(['coinflip', 'onlyTails']);
+            });
     });
 });
