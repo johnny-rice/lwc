@@ -210,7 +210,7 @@ const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
     template: ShadowRoot | null;
-    refNodes: RefNodes;
+    refs: RefNodes;
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -485,7 +485,7 @@ LightningElement.prototype = {
             return EMPTY_REFS;
         }
 
-        // The Template refs can be cached based on the VM refs, since the VM refs
+        // The refNodes can be cached based on the refVNodes, since the refVNodes
         // are recreated every time the template is rendered.
         let refs = refsCache.get(refVNodes);
 
