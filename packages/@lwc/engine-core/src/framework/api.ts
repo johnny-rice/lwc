@@ -27,7 +27,7 @@ import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
-import { EmptyArray, setRef } from './utils';
+import { EmptyArray, setRefVNode } from './utils';
 import { isComponentConstructor } from './def';
 import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
@@ -107,7 +107,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         owner: vmBeingRendered,
     };
 
-    setRef(vmBeingRendered, ref, vnode);
+    setRefVNode(vmBeingRendered, ref, vnode);
 
     return vnode;
 }
@@ -225,7 +225,7 @@ function c(
     };
     addVNodeToChildLWC(vnode);
 
-    setRef(vmBeingRendered, ref, vnode);
+    setRefVNode(vmBeingRendered, ref, vnode);
 
     return vnode;
 }

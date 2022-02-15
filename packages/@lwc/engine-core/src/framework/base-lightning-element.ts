@@ -60,7 +60,7 @@ import {
     ShadowMode,
     ShadowSupportMode,
     VM,
-    Refs,
+    RefVNodes,
 } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
@@ -202,15 +202,15 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'title'
     >;
 
-type TemplateRefs = { [name: string]: Element };
+type RefNodes = { [name: string]: Element };
 
-const EMPTY_REFS: TemplateRefs = freeze(create(null));
+const EMPTY_REFS: RefNodes = freeze(create(null));
 
-const refsCache: WeakMap<Refs, TemplateRefs> = new WeakMap();
+const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
     template: ShadowRoot | null;
-    refs: TemplateRefs;
+    refNodes: RefNodes;
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -477,24 +477,25 @@ LightningElement.prototype = {
         return vm.shadowRoot;
     },
 
-    get refs(): TemplateRefs {
+    get refNodes(): RefNodes {
         const vm = getAssociatedVM(this);
 
-        if (isNull(vm.refs)) {
+        const { refVNodes } = vm;
+        if (isNull(refVNodes)) {
             return EMPTY_REFS;
         }
 
         // The Template refs can be cached based on the VM refs, since the VM refs
         // are recreated every time the template is rendered.
-        let refs = refsCache.get(vm.refs);
+        let refs = refsCache.get(refVNodes);
 
         if (isUndefined(refs)) {
             refs = create(null);
-            for (const key of keys(vm.refs)) {
-                refs![key] = vm.refs[key].elm as Element;
+            for (const key of keys(refVNodes)) {
+                refs![key] = refVNodes[key].elm as Element;
             }
             freeze(refs);
-            refsCache.set(vm.refs, refs!);
+            refsCache.set(refVNodes, refs!);
         }
 
         return refs!;
