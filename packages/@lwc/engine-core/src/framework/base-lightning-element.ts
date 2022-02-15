@@ -477,7 +477,7 @@ LightningElement.prototype = {
         return vm.shadowRoot;
     },
 
-    get refNodes(): RefNodes {
+    get refs(): RefNodes {
         const vm = getAssociatedVM(this);
 
         const { refVNodes } = vm;
