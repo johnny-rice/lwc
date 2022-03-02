@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { LWCClassErrors, generateErrorMessage } = require('@lwc/errors');
+const { generateErrorMessage } = require('@lwc/errors');
 const lineColumn = require('line-column');
 
-const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
+const { LWC_PACKAGE_ALIAS } = require('./constants');
 
 function isClassMethod(classMethod, properties = {}) {
     const { kind = 'method', name } = properties;
@@ -58,23 +58,6 @@ function getEngineImportSpecifiers(path) {
             return [...acc, ...importStatement.get('specifiers')];
         }, [])
         .reduce((acc, specifier) => {
-            // Validate engine import specifier
-            if (specifier.isImportNamespaceSpecifier()) {
-                throw generateError(specifier, {
-                    errorInfo: LWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED,
-                    messageArgs: [
-                        LWC_PACKAGE_ALIAS,
-                        LWC_PACKAGE_EXPORTS.BASE_COMPONENT,
-                        LWC_PACKAGE_ALIAS,
-                    ],
-                });
-            } else if (specifier.isImportDefaultSpecifier()) {
-                throw generateError(specifier, {
-                    errorInfo: LWCClassErrors.INVALID_IMPORT_MISSING_DEFAULT_EXPORT,
-                    messageArgs: [LWC_PACKAGE_ALIAS],
-                });
-            }
-
             // Get the list of specifiers with their name
             const imported = specifier.get('imported').node.name;
             return [...acc, { name: imported, path: specifier }];
