@@ -51,17 +51,16 @@ function getEngineImportsStatements(path) {
 
 function getEngineImportSpecifiers(path) {
     const imports = getEngineImportsStatements(path);
-
-    return imports
-        .reduce((acc, importStatement) => {
+    return (
+        imports
             // Flat-map the specifier list for each import statement
-            return [...acc, ...importStatement.get('specifiers')];
-        }, [])
-        .reduce((acc, specifier) => {
+            .flatMap((importStatement) => importStatement.get('specifiers'))
             // Get the list of specifiers with their name
-            const imported = specifier.get('imported').node.name;
-            return [...acc, { name: imported, path: specifier }];
-        }, []);
+            .map((specifier) => {
+                const imported = specifier.get('imported').node.name;
+                return { name: imported, path: specifier };
+            })
+    );
 }
 
 function normalizeFilename(source) {
