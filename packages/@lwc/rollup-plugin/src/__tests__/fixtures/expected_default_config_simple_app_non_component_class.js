@@ -21,10 +21,6 @@
 
     }
 
-    lwc.registerDecorators(AlsoNotALightningElement, {
-      fields: ["foo"]
-    });
-
     class App extends lwc.LightningElement {
       renderedCallback() {
         // eslint-disable-next-line no-console
